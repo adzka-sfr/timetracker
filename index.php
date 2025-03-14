@@ -14,40 +14,10 @@
 <body>
     <div class="container mt-2">
         <h1 class="mb-4" id="add-data">Real-Time Counter</h1>
-        <div class="card">
-            <div class="card-body" id="data-table">
-                <div class="row">
-                    <div class="col-12">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th colspan="6">Skuter Listrik</th>
-                                </tr>
-                                <tr>
-                                    <th colspan="6">2025-12-12 09:00:00</th>
-                                </tr>
-                                <tr>
-                                    <th>Tahun</th>
-                                    <th>Bulan</th>
-                                    <th>Hari</th>
-                                    <th>Jam</th>
-                                    <th>Menit</th>
-                                    <th>Detik</th>
-                                </tr>
-                            </thead>
-                            <tbody style="text-align: right;">
-                                <tr>
-                                    <td>0</td>
-                                    <td>0</td>
-                                    <td>3</td>
-                                    <td>5</td>
-                                    <td>0</td>
-                                    <td>0</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <div class="row">
+            <div class="col-12" id="data-table">
+                <!-- Data Table Here -->
+
             </div>
         </div>
 
