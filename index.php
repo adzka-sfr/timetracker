@@ -156,10 +156,8 @@
                         $('#c_desc').val('');
                         $('#c_event').val('');
                         $('#c_keygen').val('');
-                        setTimeout(() => {
-                            // load data
-                            window.location.reload();
-                        }, 3000);
+                        // load data
+                        window.location.reload();
                     } else {
                         $('#c_keygen_error2').show();
                     }
@@ -197,27 +195,51 @@
                 card.className = "card mb-3";
 
                 const cardHeader = document.createElement("div");
-                cardHeader.className = "card-header";
-                cardHeader.textContent = item.c_title;
+                cardHeader.className = "card-header d-flex justify-content-between align-items-center";
+
+                const headerTitle = document.createElement("h3");
+                headerTitle.textContent = item.c_title;
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "-";
+                deleteButton.className = "btn btn-danger btn-sm";
+                deleteButton.onclick = function() {
+                    deleteData(item.id);
+                };
+
+                cardHeader.appendChild(headerTitle);
+                cardHeader.appendChild(deleteButton);
 
                 const cardBody = document.createElement("div");
                 cardBody.className = "card-body";
+
+                const eventTime = document.createElement("p");
+                const eventDate = new Date(item.c_event_time);
+                const formattedDate = `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2, '0')}-${String(eventDate.getDate()).padStart(2, '0')} ${String(eventDate.getHours()).padStart(2, '0')}:${String(eventDate.getMinutes()).padStart(2, '0')}:${String(eventDate.getSeconds()).padStart(2, '0')}`;
+                eventTime.innerHTML = `<strong>${formattedDate}</strong>`;
+                eventTime.className = "mb-3";
 
                 const description = document.createElement("p");
                 description.textContent = item.c_desc;
                 description.className = "mb-3";
 
+                cardBody.appendChild(eventTime);
+
                 const table = document.createElement("table");
                 table.className = "table table-bordered";
+                table.style.fontSize = "0.8em";
 
                 const thead = document.createElement("thead");
                 const headerRow = document.createElement("tr");
                 const headers = ["Tahun", "Bulan", "Hari", "Jam", "Menit", "Detik"];
                 headers.forEach(header => {
                     const th = document.createElement("th");
+                    th.style.textAlign = "center";
                     th.textContent = header;
                     headerRow.appendChild(th);
                 });
+
+                table.style.textAlign = "center";
                 thead.appendChild(headerRow);
 
                 const tbody = document.createElement("tbody");
@@ -251,6 +273,24 @@
                 card.appendChild(cardBody);
 
                 tableContainer.appendChild(card);
+            });
+        }
+
+        function deleteData(id) {
+            $.ajax({
+                url: 'delete.php',
+                type: 'POST',
+                data: {
+                    id: id
+                },
+                success: function(response) {
+                    var response = JSON.parse(response);
+                    if (response.status === 'success') {
+                        window.location.reload();
+                    } else {
+                        alert('Failed to delete data');
+                    }
+                }
             });
         }
 
