@@ -2,19 +2,24 @@
 date_default_timezone_set('Asia/Jakarta');
 $now = date('Y-m-d H:i:s');
 
-// $host = 'localhost';  // local
-// $dbname = 'counter'; // local
-// $username = 'root';  // local
-// $password = '';  // local
+// Detect environment based on the host
+if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1') {
+    // Local environment
+    $host = 'localhost';
+    $dbname = 'counter';
+    $username = 'root';
+    $password = '';
+} else {
+    // Hosting environment
+    $host = 'localhost';
+    $dbname = 'u266480338_counter';
+    $username = 'u266480338_adzkaganteng';
+    $password = 'Alfianwai1!';
+}
 
 $today = date('l', strtotime($now));
 $keygen = $today . '-vicidior';
 $keygen = strtolower($keygen);
-
-$host = 'localhost';  // hosting
-$dbname = 'u266480338_counter'; // hosting
-$username = 'u266480338_adzkaganteng';  // hosting
-$password = 'Alfianwai1!';  // hosting
 
 try {
     $connect = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
