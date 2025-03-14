@@ -190,7 +190,17 @@
                 eventTime.className = "mb-3";
 
                 const description = document.createElement("p");
-                description.textContent = item.c_desc;
+                if (item.c_desc.includes(',')) {
+                    const list = document.createElement("ul");
+                    item.c_desc.split(',').forEach(descItem => {
+                        const listItem = document.createElement("li");
+                        listItem.textContent = descItem.trim();
+                        list.appendChild(listItem);
+                    });
+                    description.appendChild(list);
+                } else {
+                    description.textContent = item.c_desc;
+                }
                 description.className = "mb-3";
 
                 cardBody.appendChild(eventTime);
