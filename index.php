@@ -203,6 +203,10 @@
                 const cardBody = document.createElement("div");
                 cardBody.className = "card-body";
 
+                const description = document.createElement("p");
+                description.textContent = item.c_desc;
+                description.className = "mb-3";
+
                 const table = document.createElement("table");
                 table.className = "table table-bordered";
 
@@ -241,6 +245,7 @@
                 table.appendChild(thead);
                 table.appendChild(tbody);
 
+                cardBody.appendChild(description);
                 cardBody.appendChild(table);
                 card.appendChild(cardHeader);
                 card.appendChild(cardBody);
