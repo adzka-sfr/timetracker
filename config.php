@@ -18,7 +18,9 @@ if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.
 }
 
 $today = date('l', strtotime($now));
-$keygen = $today . '-vicidior';
+$minutes = date('i', strtotime($now));
+$hour = date('H', strtotime($now));
+$keygen = $minutes . $hour . '-vicidior';
 $keygen = strtolower($keygen);
 
 try {
