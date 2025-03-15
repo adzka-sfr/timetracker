@@ -112,26 +112,42 @@
                 const headerTitle = document.createElement("h3");
                 headerTitle.textContent = item.c_title;
 
+                const buttonGroup = document.createElement("div");
+                buttonGroup.className = "btn-group";
+
                 const deleteButton = document.createElement("button");
-                deleteButton.textContent = "-";
+                deleteButton.textContent = "X";
                 deleteButton.className = "btn btn-danger btn-sm";
                 deleteButton.onclick = function() {
                     deleteData(item.id);
                 };
 
-                cardHeader.appendChild(headerTitle);
-                cardHeader.appendChild(deleteButton);
+                const endButton = document.createElement("button");
+                endButton.textContent = "O";
+                endButton.className = "btn btn-warning btn-sm";
+                endButton.onclick = function() {
+                    stopData(item.id);
+                };
 
-                const cardBody = document.createElement("div");
+                buttonGroup.appendChild(deleteButton);
+                buttonGroup.appendChild(endButton);
+
+                cardHeader.appendChild(headerTitle);
+                cardHeader.appendChild(buttonGroup);
+
+                const cardBody = document.createElement("div");        
                 cardBody.className = "card-body";
 
                 const eventTime = document.createElement("p");
                 const eventDate = new Date(item.c_event_time);
                 const formattedDate = `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2, '0')}-${String(eventDate.getDate()).padStart(2, '0')} ${String(eventDate.getHours()).padStart(2, '0')}:${String(eventDate.getMinutes()).padStart(2, '0')}:${String(eventDate.getSeconds()).padStart(2, '0')}`;
-                eventTime.innerHTML = `<strong>${formattedDate}</strong>`;
-                eventTime.className = "mb-3";
-
-                const table = document.createElement("table");
+                if (item.c_event_end) {
+                    const endDate = new Date(item.c_event_end);
+                    const formattedEndDate = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')} ${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}:${String(endDate.getSeconds()).padStart(2, '0')}`;
+                    eventTime.innerHTML = `<strong>${formattedDate} - ${formattedEndDate}</strong>`;         } else {
+                    eventTime.innerHTML = `<strong>${formattedDate} - sekarang</strong>`;
+                }
+                eventTime.className = "mb-3";         const table = document.createElement("table");
                 table.className = "table table-bordered";
                 table.style.fontSize = "0.8em";
 
@@ -152,8 +168,8 @@
                 const row = document.createElement("tr");
 
                 const startDate = new Date(item.c_event_time);
-                const now = new Date();
-                const diff = now - startDate;
+                const endDate = item.c_event_end ? new Date(item.c_event_end) : new Date();
+                const diff = endDate - startDate;
 
                 const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
                 const months = Math.floor((diff % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24 * 30));
@@ -167,9 +183,7 @@
                     const cell = document.createElement("td");
                     cell.textContent = value;
                     row.appendChild(cell);
-                });
-
-                tbody.appendChild(row);
+                });         tbody.appendChild(row);
                 table.appendChild(thead);
                 table.appendChild(tbody);
 
@@ -197,13 +211,14 @@
             });
         }
 
+        // function to delete data
         function deleteData(id) {
             const currentDate = new Date();
             const keygenkey = `${currentDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()}-msbrewwc`;
             
 
             Swal.fire({
-                title: 'Enter Keygen',
+                title: 'Enter Keygen to Delete',
                 input: 'text',
                 inputPlaceholder: 'Enter your keygen here',
                 inputAttributes: {
@@ -247,6 +262,72 @@
                                 Swal.fire(
                                     'Error!',
                                     'Failed to delete data.',
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        // function to stop data
+        function stopData(id) {
+            const currentDate = new Date();
+            const keygenkey = `${currentDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()}-msbrewwc`;
+
+            Swal.fire({
+                title: 'Enter Keygen to Stop Time',
+                html: `
+                    <input type="text" id="keygen-input" class="swal2-input" placeholder="Enter your keygen here">
+                    <input type="datetime-local" id="stop-time-input" class="swal2-input" placeholder="Enter stop time">
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    const keygen = document.getElementById('keygen-input').value.trim();
+                    const stop_time = document.getElementById('stop-time-input').value;
+
+                    return new Promise((resolve, reject) => {
+                        if (keygen === '') {
+                            reject('Keygen cannot be empty!');
+                        } else if (keygen !== keygenkey) {
+                            reject('Invalid keygen!');
+                        } else if (stop_time === '') {
+                            reject('Stop time cannot be empty!');
+                        } else {
+                            resolve({ keygen, stop_time });
+                        }
+                    }).catch(error => {
+                        Swal.showValidationMessage(error);
+                    });
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const { stop_time } = result.value;
+                    $.ajax({
+                        url: 'stop.php',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            stop_time: stop_time
+                        },
+                        success: function(response) {
+                            var response = JSON.parse(response);
+                            if (response.status === 'success') {
+                                Swal.fire(
+                                    'Stopped!',
+                                    'Your data has been stopped.',
+                                    'success'
+                                ).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'Failed to stop data.',
                                     'error'
                                 );
                             }
